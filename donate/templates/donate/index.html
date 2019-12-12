@@ -1,0 +1,28 @@
+{% extends "donate/base.html" %}
+
+{% block body %}
+
+<div class="container">
+
+    <!-- Invisible element to vertically center buttons -->
+    <div class="row topspace"></div>
+
+    <div class="row">
+        <div class="col-md-6 p-4">
+            <!-- ADD BAG BUTTON -->
+            <a href="{% url 'bag' %}" class="fancy-button mediu midnight move-up center-text">
+                <br>
+                <span style="font-size: 32px;">Donating a Bag?</span>
+            </a>
+        </div>
+        <div class="col-md-6 p-4">
+            <!-- ADD BAG BUTTON -->
+            <a href="{% url 'bag' %}" class="fancy-button mediu midnight move-up center-text">
+                <br>
+                <span style="font-size: 32px;">Picking Up?</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

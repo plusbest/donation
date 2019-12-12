@@ -1,0 +1,38 @@
+{% extends "donate/base.html" %}
+
+
+{% block body %}
+
+<form action="{% url 'register' %}" method="post">
+    {% csrf_token %}
+    <div class="container">
+        <div class=col-md-4>
+            <br>
+            <h1>REGISTER</h1>
+            <legend class="border-bottom mb-4">join the give train</legend>
+            <br>
+            <!-- User login fields -->
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+            </div>
+            <div class="form-group">
+                <label for="username">Email</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+            </div>
+            <div class="form-group">
+                <label>Confirm</label>
+                <input type="password" class="form-control" id="passconfirm" name="passconfirm" placeholder="Re-enter Password" required>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-outline-dark" value="login">Submit</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% endblock %}

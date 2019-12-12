@@ -1,0 +1,407 @@
+{% extends "donate/base.html" %}
+
+
+{% block body %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <br>
+            <br>
+            <div id="accordion">
+                <div class="card">
+                    <div class="card-header" id="headingTwo">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapse-show	" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Location
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseTwo" class="collapse" aria-labelledby="headingone" data-parent="#accordion">
+                        <div class="card-body">
+
+                            <!-- LOCATION CHANGE FORM -->
+                            <form action="{% url 'location' %}" method="post" name="datalist[]">
+                                {% csrf_token %}
+                                <div class="container">
+                                    <div class=col-md-8>
+                                        <br>
+                                        <h3>LOCATION</h3>
+                                        <h1 class="mb-4">Update Your Location</h1>
+                                        <p>
+                                            <ul> Your address:
+                                                <li><b>{{ MyAddress.street_number|default_if_none:"" }} {{ MyAddress.route|default_if_none:"" }}</b></li>
+                                                <li><b>{{ MyAddress.locality|default_if_none:"" }} {{ MyAddress.administrative_area_level_1|default_if_none:"" }} {{ MyAddress.postal_code|default_if_none:""|stringformat:"05d" }}</b></li>
+                                        </p>
+                                        <!-- Location Search Form -->
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" id="autocomplete" autofocus="True" onFocus="geolocate()" placeholder="Search address">
+                                        </div>
+                                        <p style="font-size: 14px">*All fields must populate in order for address to be valid</p>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" id="street_number" name="street_number" placeholder="#" readonly="readonly">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" id="route" name="route" placeholder="street" readonly="readonly">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-5">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" id="locality" name="locality" placeholder="city/town" readonly="readonly">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" id="administrative_area_level_1" name="administrative_area_level_1" placeholder="state" readonly="readonly">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" id="country" name="country" placeholder="country" readonly="readonly">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" id="postal_code" name="postal_code" placeholder="zipcode" readonly="readonly">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-outline-dark" value="Submit">Submit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <!-- END LOCATION CHANGE FORM -->
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingThree">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                Notifications
+                            </button>
+                        </h5>
+                    </div>
+
+                    <div id="collapseOne" class="collapse show" aria-labelledby="headingtwo" data-parent="#accordion">
+                        <div class="card-body">
+
+                            <!-- ACTION ITEMS TABLE -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h3>YOUR MOVE</h3>
+                                    <p></p>
+
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">owner</th>
+                                                <th scope="col">bag #</th>
+                                                <th scope="col">lbs.</th>
+                                                <th scope="col">category</th>
+                                                <th scope="col">status</th>
+                                                <th scope="col">requested by</th>
+<!--                                                 <th scope="col">owner</th> -->
+                                                <th scope="col"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Search all logged user requests -->
+                                            {% for req in MyRequestsFrom %}
+                                            <!-- Query bag associated with request -->
+                                            {% with bag=req.bag_req %}
+                                            <!-- Filter for unapproved (pending) requests -->
+                                            {% if req.approved == False %}
+
+                                            <tr>
+                                                <th scope="row">{{ req.owner }}</th>
+                                                <td>{{ bag.id }}</td>
+                                                <td>{{ bag.lbs }}</td>
+                                                <td>
+                                                    {% for category in bag.category.all %}
+                                                    <span class="pr-2"><button type="button" class="btn btn-outline-secondary btn-xs">{{ category }}</button><span>
+                                                            {% endfor %}
+                                                </td>
+                                                <td>
+                                                    <span style="font-size: 13px;">awaiting your action</span>
+                                                    <button type="button" class="btn btn-outline-success btn-sm modclick" name="approve" data-req_id="{{ req.id }}">&#10003;</button>
+                                                    <button type="button" class="btn btn-outline-danger btn-sm modclick" name="deny" data-req_id="{{ req.id }}">&#10007;</button>
+                                                </td>
+                                                <td>
+                                                    <span>{{ req.requestor }}</span>
+                                                </td>
+<!--                                                 <td>
+                                                    <span>{{ req.owner }} ({{ req.owner.email }})</span>
+                                                </td> -->
+                                            </tr>
+
+                                            {% endif %}
+                                            {% endwith %}
+                                            {% endfor %}
+
+
+                                            <!-- Search all logged user requests -->
+                                            {% for req in MyRequestsTo %}
+                                            <!-- Query bag associated with request -->
+                                            {% with bag=req.bag_req %}
+                                            <!-- Display unapproved (pending) requests -->
+                                            {% if req.approved == True %}
+                                            <tr>
+                                                <th scope="row">{{ req.owner }}</th>
+                                                <td>{{ bag.id }}</td>
+                                                <td>{{ bag.lbs }}</td>
+                                                <td>
+                                                    {% for category in bag.category.all %}
+                                                    <span class="pr-2"><button type="button" class="btn btn-outline-secondary btn-xs">{{ category }}</button><span>
+                                                            {% endfor %}
+                                                </td>
+                                                <td>
+                                                    <span style="font-size: 13px;">needs your delivery</span>
+                                                    <button type="button" class="btn btn-outline-success btn-sm modclick" name="complete" data-req_id="{{ req.id }}">All Done</button>
+                                                </td>
+                                                <td>
+                                                </td>
+                                            </tr>
+                                            {% endif %}
+                                            {% endwith %}
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- End row -->
+
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+                <!-- PENDING TABLE START -->
+                <div class="card">
+                    <div class="card-header" id="headingThree">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                History/Pending
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseThree" class="collapse show" aria-labelledby="headingtwo" data-parent="#accordion">
+                        <div class="card-body">
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h3>WAITING</h3>
+                                    <p></p>
+                                    <table class="table table-sm">
+                                        <thead>
+                                        <tbody>
+                                            <tr>
+                                                <th scope="col">owner</th>
+                                                <th scope="col">bag #</th>
+                                                <th scope="col">lbs.</th>
+                                                <th scope="col">category</th>
+                                                <th scope="col">status</th>
+                                                <th scope="col">driver</th>
+                                                <th scope="col"></th>
+                                            </tr>
+                                            <!-- Search all logged user requests -->
+                                            {% for req in MyRequestsTo %}
+                                            <!-- Query bag associated with request -->
+                                            {% with bag=req.bag_req %}
+                                            <!-- Filter for unapproved (pending) requests -->
+                                            {% if req.approved == False %}
+
+                                            <tr>
+                                                <th scope="row">{{ req.owner }}</th>
+                                                <td>{{ bag.id }}</td>
+                                                <td>{{ bag.lbs }}</td>
+                                                <td>
+                                                    {% for category in bag.category.all %}
+                                                    <span class="pr-2"><button type="button" class="btn btn-outline-secondary btn-xs">{{ category }}</button><span>
+                                                            {% endfor %}
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-outline-warning btn-sm modclick" name="cancel" data-req_id="{{ req.id }}">pending approval</button>
+                                                </td>
+                                                <td>
+                                                </td>
+                                            </tr>
+
+                                            {% endif %}
+                                            {% endwith %}
+                                            {% endfor %}
+
+
+                                            <!-- Search all logged user requests -->
+                                            {% for req in MyRequestsFrom %}
+                                            <!-- Query bag associated with request -->
+                                            {% with bag=req.bag_req %}
+                                            <!-- Filter for unapproved (pending) requests -->
+                                            {% if req.approved == True %}
+
+                                            <tr>
+                                                <th scope="row">{{ req.owner }}</th>
+                                                <td>{{ bag.id }}</td>
+                                                <td>{{ bag.lbs }}</td>
+                                                <td>
+                                                    {% for category in bag.category.all %}
+                                                    <span class="pr-2"><button type="button" class="btn btn-outline-secondary btn-xs">{{ category }}</button><span>
+                                                            {% endfor %}
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-outline-info btn-sm modclick" name="cancel" data-req_id="{{ req.id }}">pending pickup</button>
+                                                </td>
+                                                <td>
+                                                    <span>{{ req.requestor }} ({{ req.requestor.email }})</span>
+                                                </td>
+                                            </tr>
+
+                                            {% endif %}
+                                            {% endwith %}
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- End row -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Google maps API -->
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_API_KEY }}&libraries=places&callback=initAutocomplete" async defer>
+</script>
+
+<script>
+    var placeSearch, autocomplete;
+
+    var componentForm = {
+        street_number: 'short_name',
+        route: 'long_name',
+        locality: 'long_name',
+        administrative_area_level_1: 'short_name',
+        country: 'long_name',
+        postal_code: 'short_name'
+    };
+
+    function initAutocomplete() {
+        autocomplete = new google.maps.places.Autocomplete(
+            document.getElementById('autocomplete'), {
+                types: ['geocode']
+            });
+
+        autocomplete.setFields(['address_component']);
+
+        autocomplete.addListener('place_changed', fillInAddress);
+    }
+
+    function fillInAddress() {
+        // Get the place details from the autocomplete object.
+        var place = autocomplete.getPlace();
+
+        for (var component in componentForm) {
+            document.getElementById(component).value = '';
+
+            // Add value to html tag here
+
+            // Disable inputs on fill to prevent data tamper
+            document.getElementById(component).disabled = false;
+        }
+
+        // Get each component of the address from the place details,
+        // and then fill-in the corresponding field on the form.
+        for (var i = 0; i < place.address_components.length; i++) {
+            var addressType = place.address_components[i].types[0];
+            if (componentForm[addressType]) {
+                var val = place.address_components[i][componentForm[addressType]];
+                document.getElementById(addressType).value = val;
+            }
+        }
+    }
+
+    function geolocate() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var geolocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                var circle = new google.maps.Circle({
+                    center: geolocation,
+                    radius: position.coords.accuracy
+                });
+                autocomplete.setBounds(circle.getBounds());
+            });
+        }
+    }
+</script>
+
+<script>
+
+    var classlist = document.getElementsByClassName('modclick');
+
+    for (var i = 0; i < classlist.length; i++) {
+        classlist[i].addEventListener('click', function(e) {
+
+        // AJAX request only if request mod buttons pressed
+        if (e.target.name === ('approve') || ('deny') || ('cancel') || ('complete')) {
+
+            // AJAX call to handle request modification
+            $.ajax({
+                url: "{% url 'ajax_mod_request' %}",
+
+                // Info to pass into view
+                data: {
+                    'mod_type': e.target.name,
+                    'req_id': e.target.dataset.req_id,
+                },
+                dataType: 'json',
+                success: function(data) {
+                    if (data) {
+
+                        // Message for succesful action
+                        alert(data.message);
+
+                        // Page redirect for refresh
+                        window.location.href = data.url;
+                    }
+                }
+            });
+        } else {
+            // pass
+        }
+        // End AJAX
+
+        });
+    }
+
+</script>
+
+
+
+{% endblock %}

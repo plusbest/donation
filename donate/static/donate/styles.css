@@ -1,0 +1,162 @@
+/*Custom google font*/
+@import url('https://fonts.googleapis.com/css?family=Karla|Source+Sans+Pro&display=swap');
+
+
+body {
+font-family: 'Karla', sans-serif;
+	font-size: 17px;
+	background-color: #F8F7F7;
+}
+
+/*Remove bullet styling*/
+ul {
+	list-style-type: none;
+}
+
+/*Custom header colors*/
+h1 {
+	color: #FF3700;
+}
+
+h3 {
+	color: #0C102D;
+}
+
+p {
+	color: #2d2828;
+}
+
+/*Override bootstrap Nav*/
+#username {
+	font-size: 20px !important;
+}
+.navbar-brand {
+	padding-left: 16px;
+}
+
+.nav-link {
+	padding-left: 16px !important;
+}
+
+.navbar {
+  min-height: 100px;
+}
+
+.navbar-light .navbar-nav .nav-link {
+	font-size: 18px;
+}
+
+.navbar-light .navbar-brand {
+	font-size: 28px;
+}
+
+
+/*Override bootstrap button font size for username*/
+.username {
+	font-size: 16px !important;
+}
+
+/* Google Map sizing */
+#map {
+    height: 400px;
+    /* The height is 400 pixels */
+    width: 100%;
+    /* The width is the width of the web page */
+}
+
+/*Custom navbar style*/
+.navbar-custom {
+	background-color: #F8F7F7 !important;
+	color: white !important;
+}
+
+.nav-link {
+	color: #2d2828 !important;
+}
+
+.align_text_right {
+	text-align: right;
+	float: right;
+}    
+
+/*Extra small bootstrap button*/
+.btn-group-xs > .btn, .btn-xs {
+  padding: .25rem .25rem;
+  font-size: .875rem;
+  line-height: .5;
+  border-radius: .2rem;
+}
+
+.center-text {
+	text-align: center;
+}
+/*Aligns add bag and pick-up buttons to vertical center*/
+.topspace  {
+	height: 40vh;
+}
+
+/* Basic Styles */
+.fancy-button {
+  position: relative;
+  color: white;
+  margin: 5px;
+  padding: 25px 25px;
+  text-decoration: none;
+  display: block;
+  outline: 2px solid;
+  outline-color: #D4D4D4;
+  outline-offset: 15px;
+  line-height: 100%;
+  overflow: hidden;
+  height: 100px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+/* Basic Styles */
+.fancy-button:hover {
+
+  outline-color: #FF3700;
+}
+
+.medium {
+  padding: 10px 25px;
+  font-size: 1.15em;
+}
+
+.midnight {
+  background-color: #D4D4D4;
+}
+.midnight:hover {
+  color: #fff;
+  background-color: #FF3700;
+}
+
+
+/* Shapes */
+.rounded {
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  -o-border-radius: 15px;
+  border-radius: 15px;
+}
+
+.move-up {
+  -webkit-transition: all 0.35s ease;
+  -moz-transition: all 0.35s ease;
+  -o-transition: all 0.35s ease;
+  transition: all 0.35s ease;
+}
+.move-up:hover {
+  margin-top: -2px;
+}
+
+.vertical-center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}

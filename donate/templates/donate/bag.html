@@ -1,0 +1,123 @@
+{% extends "donate/base.html" %}
+
+
+{% block body %}
+
+<form action="{% url 'bag' %}" method="post">
+    {% csrf_token %}
+    <div class="container">
+        <div class=col-md-6>
+            <br>
+            <h3>BAGS</h3>
+            <h1 class="mb-4">Got Bags to Donate?</h1>
+            <!-- Add New Bag Form -->
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="username">Weight</label>
+                        <input type="number" step="0.01" min="1" class="form-control" id="weight" name="weight" placeholder="lbs">
+                    </div>
+                </div>
+            </div>
+            <!-- Choose categories for bag -->
+            <div class="form-group" id="category_list">
+                {% for category in BagCategory %}
+                <input class="form-group" name="categorylist[]" type="checkbox" value="{{ category.id }}">
+                <font size=3>{{ category.name }}</font></input>
+                {% endfor %}
+            </div>
+            <!-- Submit new bag -->
+            <div class="form-group">
+                <button type="submit" class="btn btn-outline-dark btn-sm" value="login">Submit</button>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="col-md-12">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Bag #</th>
+                        <th scope="col">Weight</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">requestor/driver:</th>
+                    </tr>
+                </thead>
+                <!-- Populate all logged user's bags -->
+                {% for bag in MyBags %}
+                <tbody>
+                    <tr>
+                        <td>{{ bag.id }}</td>
+                        <td>{{ bag.lbs }}lbs</td>
+                        <td>
+                            {% for category in bag.category.all %}
+                            <button type="button" class="btn btn-outline-secondary btn-xs">{{ category.name }}</button>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% if bag.request != None %}
+                            {% if bag.request.approved == False %}
+                            <button type="button" class="btn btn-outline-success btn-sm modclick" name="approve" data-req_id="{{ bag.request.id }}">&#10003;</button>
+                            <button type="button" class="btn btn-outline-danger btn-sm modlick" name="deny" data-req_id="{{ bag.request.id }}">&#10007;</button>
+                            {% else %}
+                            <button type="button" class="btn btn-outline-info btn-sm" data-req_id="{{ bag.request.id }}">pending pickup</button>
+                            {% endif %}
+                            {% else %}
+                            <span style="font-size: 13px;">AVAILABLE</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ bag.request.requestor }}
+                        </td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+
+    </div>
+</form>
+
+<script>
+
+    var classlist = document.getElementsByClassName('modclick');
+
+    for (var i = 0; i < classlist.length; i++) {
+        classlist[i].addEventListener('click', function(e) {
+
+        // AJAX request only if request mod buttons pressed
+        if (e.target.name === ('approve') || ('deny') || ('cancel') || ('complete')) {
+
+            // AJAX call to handle request modification
+            $.ajax({
+                url: "{% url 'ajax_mod_request' %}",
+
+                // Info to pass into view
+                data: {
+                    'mod_type': e.target.name,
+                    'req_id': e.target.dataset.req_id,
+                },
+                dataType: 'json',
+                success: function(data) {
+                    if (data) {
+
+                        // Message for succesful action
+                        alert(data.message);
+
+                        // Page redirect for refresh
+                        window.location.href = data.url;
+                    }
+                }
+            });
+        } else {
+            // pass
+        }
+        // End AJAX
+
+        });
+    }
+
+</script>
+
+{% endblock %}

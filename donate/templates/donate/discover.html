@@ -1,0 +1,238 @@
+{% extends "donate/base.html" %}
+
+{% block body %}
+
+<div class="container">
+
+    <!-- Google Maps API for Initializing Map -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_API_KEY }}&callback=initMap">
+    </script>
+
+    <div class=col-md-6>
+        <br>
+        <h3>PICK-UP</h3>
+        <h1 class="mb-4">Help a Neighbor Out</h1>
+    </div>
+
+    <!--Google Map -->
+    <div id="map"></div>
+    <br>
+    <div class="row">
+        <!-- Bags table for clicked user -->
+        <div class="col-md-12">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">user: <span id="target_user"></span></th>
+                        <th scope="col"></th>
+                        <th scope="col">total bags: <span id="total_bags"></span></th>
+                    </tr>
+                    <tr>
+                        <th scope="col">weight</th>
+                        <th scope="col">category</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody id="bag_table">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Initialize and add Google Map
+    function initMap() {
+
+        // Parse user and coordinate information passed in from views.py
+        var coords = JSON.parse('{{ NearbyCoordsJSON|safe }}');
+
+        // Properly store user location coordinates
+        var my_lat = parseFloat("{{ MyAddress.lat }}");
+        var my_lng = parseFloat("{{ MyAddress.lng }}");
+
+        // Save location as my_coords dict
+        var my_coords = {
+            lat: my_lat,
+            lng: my_lng
+        };
+
+        // The map, centered at my my_coords
+        var map = new google.maps.Map(
+            document.getElementById('map'), {
+                zoom: 15,
+                center: my_coords
+            });
+
+        // The marker, positioned at my_coords
+        var my_marker = new google.maps.Marker({
+            position: my_coords,
+            map: map
+        });
+
+        // Iterate through all existing user coordinates
+        for (var i = 0; i < coords.length; i++) {
+
+            // Store coordinate lat and lng
+            var newcoord = {
+                lat: coords[i]['lat'],
+                lng: coords[i]['lng']
+            };
+
+            // Create new marker
+            var markers = new google.maps.Marker({
+                position: newcoord,
+                map: map,
+                userid: coords[i]['userid']
+            });
+
+            // Add on-click event listener for each marker
+            google.maps.event.addListener(markers, 'click', function(event) {
+
+                // Clear previous bag table before new populate
+                document.querySelector('#bag_table').innerHTML = "";
+
+                // Ajax request to return user and bag info of clicked location
+                $.ajax({
+
+                    url: "{% url 'ajax_bag_load' %}",
+
+                    // Info to pass into views.py
+                    data: {
+                        'userid': this["userid"],
+                        'lat': this["position"]["lat"],
+                        'lng': this["position"]["lng"],
+                    },
+
+                    dataType: 'json',
+
+                    success: function(data) {
+
+                        // Receives data from views containing cliicked user's bags
+                        if (data) {
+
+                            // Curate list of bag objects
+                            var bagslist = JSON.parse(data.Bags);
+
+                            // User of bags returned
+                            var bag_user = bagslist[0]['fields']['user'];
+
+                            // Table to be populated with User's bag info
+                            var bag_table = document.getElementById('bag_table');
+
+                            // Apply clicked user to table header
+                            document.querySelector('#target_user').innerHTML = bag_user;
+
+                            // Apply total bags to table header
+                            document.querySelector('#total_bags').innerHTML = bagslist.length;
+
+                            // Add bag as table data
+                            for (var j = 0; j < bagslist.length; j++) {
+
+                                const tr = document.createElement('tr');
+                                const td_weight = document.createElement('td');
+
+                                // Adds bag weight to row
+                                td_weight.innerHTML = `${bagslist[j]['fields']['lbs']} lbs.`;
+                                tr.append(td_weight);
+
+                                // Check if categories present, add none if not
+                                if (bagslist[j]['fields']['category'].length == 0) {
+                                    var categ = "(none)";
+                                    var td_category = document.createElement('td');
+                                    td_category.append(categ);
+                                } else {
+                                    // Iterate bag categories
+                                    for (var k = 0; k < bagslist[j]['fields']['category'].length; k++) {
+
+                                        // Create button element
+                                        var btn = document.createElement('button');
+
+                                        // Button attributes and styles
+                                        btn.setAttribute("type", "button");
+                                        btn.classList.add("btn");
+                                        btn.classList.add("btn-outline-secondary");
+                                        btn.classList.add("btn-xs");
+                                        btn.innerHTML = bagslist[j]['fields']['category'];
+
+                                        // Adds bag category as table data
+                                        var td_category = document.createElement('td');
+                                        td_category.append(btn);
+                                    }
+
+                                }
+
+                                // Add table data to table row
+                                tr.append(td_category);
+
+                                // Create button element
+                                var btn = document.createElement('button');
+
+                                // Button attributes and styles
+                                btn.setAttribute("name", "pickup_bag");
+                                btn.setAttribute("type", "button");
+                                btn.classList.add("btn");
+                                btn.classList.add("btn-outline-info");
+                                btn.classList.add("btn-sm");
+                                btn.classList.add("btn-request");
+                                btn.innerHTML = "request";
+                                btn.id = "requestbag-btn";
+                                btn.dataset.bagid = bagslist[j]['pk']; // BagID
+                                btn.dataset.baguser = bagslist[j]['fields']['user']; // BagUser
+
+                                // Add request button to table data
+                                var td_btn = document.createElement('td');
+                                td_btn.append(btn);
+
+                                // Add table data to row
+                                tr.append(td_btn);
+
+                                // Add row to bag table
+                                document.querySelector('#bag_table').append(tr);
+                            }
+                        }
+                    }
+                });
+                // End AJAX
+            });
+            // End GOOGLE MAPS CLICK marker listener
+        }
+
+        // Request button click event
+        document.addEventListener('click', function(e) {
+
+            // Target request button
+            if (e.target.className === "btn btn-outline-info btn-sm btn-request") {
+
+                $.ajax({
+                    url: "{% url 'ajax_bag_request' %}",
+
+                    // Info to pass into view
+                    data: {
+                        'bagid': e.target.dataset.bagid,
+                        'user': e.target.dataset.baguser,
+                    },
+                    dataType: 'json',
+
+                    // Returns data with message from views.py
+                    success: function(data) {
+                        if (data) {
+
+                            // Show message
+                            alert(data.message);
+                        }
+
+                        // Stylize request button on success to be greyed out
+                        if (data.success) {
+                            e.target.innerHTML = "requested";
+                            e.target.className = "btn btn-secondary btn-sm btn-request";
+                        }
+                    }
+                });
+                // End AJAX
+            };
+        });
+    }
+</script>
+
+{% endblock %}
