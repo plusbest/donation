@@ -443,16 +443,16 @@ def test_form(request):
 
     form = LocationForm()
 
+    # Query existing user location
+    try:
+        mylocation = Location.objects.get(user__id=request.user.id)
+
+    # Create location object for user if none found
+    except Location.DoesNotExist:
+        mylocation = Location(user=request.user)
+        mylocation.save()
+
     if request.method == 'POST':
-
-        # Query existing user location
-        try:
-            mylocation = Location.objects.get(user__id=request.user.id)
-
-        # Create location object for user if none found
-        except Location.DoesNotExist:
-            mylocation = Location(user=request.user)
-            mylocation.save()
 
         # Initialize google api-friendly address list
         google_address = []
@@ -464,12 +464,15 @@ def test_form(request):
             # Iterate Location model fields
             for field in Location._meta.get_fields():
 
-                # Append field value to google address list
-                google_address.append(request.POST.get(field.name))
+                # Assign input value to matching field name if found
+                if request.POST.get(field.name):
 
-                # Update Location field with input value
-                setattr(mylocation, str(field.name),
-                        request.POST.get(field.name))
+                    # Append field value to google address list
+                    google_address.append(request.POST.get(field.name))
+
+                    # Update Location field with input value
+                    setattr(mylocation, str(field.name),
+                            request.POST.get(field.name))
 
             # Retrieve Lat and Lon from API call JSON response
             url = f"https://maps.googleapis.com/maps/api/geocode/json?address={google_address}&key={GOOGLE_API_KEY}"
@@ -493,7 +496,7 @@ def test_form(request):
             context = {
                 "message": "successful form!",
                 "form": form,
-                "addy": google_address
+                "MyLocation": mylocation
             }
             return render(request, "donate/testform.html", context)
 
@@ -502,13 +505,14 @@ def test_form(request):
             context = {
                 "message": "unsuccessful form",
                 "form": form,
-                "addy": google_address
+                "MyLocation": mylocation
             }
             return render(request, "donate/testform.html", context)
 
 
     context = {
         "form": form,
+        "MyLocation": mylocation,
     }
 
     return render(request, "donate/testform.html", context)

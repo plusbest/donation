@@ -46,7 +46,7 @@ class Location(models.Model):
     lng = models.DecimalField(max_digits=16, decimal_places=12, default=0.0)
 
     def __str__(self):
-        return f"({self.user}) - {self.locality} - {self.administrative_area_level_1}"
+        return f"({self.user})- {self.street_number} - {self.route} - {self.locality} - {self.administrative_area_level_1} - {self.postal_code}"
 
 
 class Bag(models.Model):
