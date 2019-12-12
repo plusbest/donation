@@ -1,6 +1,6 @@
-# FINAL PROJECT --- DONATE
+# DONATION --- a django revamp of DONATE
 
-DONATE is a web application that allows people to register bagged donations or search a map to pick up their neighbors contributions.  Written mainly in **Python** and **Javascript** and utilizing the **Django** framework, it connects users through a request system to fulfill bag pick ups and a locale finder powered by the [Google Maps API](https://developers.google.com/maps/documentation/javascript/tutorial).
+DONATION is a web application that allows people to register bagged donations or search a map to pick up their neighbors contributions.  Written mainly in **Python** and **Javascript** and utilizing the **Django** framework, it connects users through a request system to fulfill bag pick ups and a locale finder powered by the [Google Maps API](https://developers.google.com/maps/documentation/javascript/tutorial).
 
 ------------
 -----
