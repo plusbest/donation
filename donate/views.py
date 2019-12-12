@@ -491,7 +491,7 @@ def test_form(request):
             mylocation.lng = coord['lng']
 
             # Save location object changes
-            mylocation.save
+            mylocation.save()
 
             context = {
                 "message": "successful form!",
