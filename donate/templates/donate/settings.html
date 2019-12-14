@@ -21,66 +21,64 @@
                         <div class="card-body">
 
                             <!-- LOCATION CHANGE FORM -->
-                            <form action="{% url 'location' %}" method="post" name="datalist[]">
+                            <form action="{% url 'testform' %}" method="post">
                                 {% csrf_token %}
-                                <div class="container">
-                                    <div class=col-md-8>
-                                        <br>
-                                        <h3>LOCATION</h3>
-                                        <h1 class="mb-4">Update Your Location</h1>
-                                        <p>
-                                            <ul> Your address:
-                                                <li><b>{{ MyAddress.street_number|default_if_none:"" }} {{ MyAddress.route|default_if_none:"" }}</b></li>
-                                                <li><b>{{ MyAddress.locality|default_if_none:"" }} {{ MyAddress.administrative_area_level_1|default_if_none:"" }} {{ MyAddress.postal_code|default_if_none:""|stringformat:"05d" }}</b></li>
-                                        </p>
-                                        <!-- Location Search Form -->
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" id="autocomplete" autofocus="True" onFocus="geolocate()" placeholder="Search address">
-                                        </div>
-                                        <p style="font-size: 14px">*All fields must populate in order for address to be valid</p>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <input type="text" class="form-control" id="street_number" name="street_number" placeholder="#" readonly="readonly">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-5">
-                                                <div class="form-group">
-                                                    <input type="text" class="form-control" id="route" name="route" placeholder="street" readonly="readonly">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-5">
-                                                <div class="form-group">
-                                                    <input type="text" class="form-control" id="locality" name="locality" placeholder="city/town" readonly="readonly">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <input type="text" class="form-control" id="administrative_area_level_1" name="administrative_area_level_1" placeholder="state" readonly="readonly">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <input type="text" class="form-control" id="country" name="country" placeholder="country" readonly="readonly">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <input type="text" class="form-control" id="postal_code" name="postal_code" placeholder="zipcode" readonly="readonly">
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        <div class="form-group">
-                                            <button type="submit" class="btn btn-outline-dark" value="Submit">Submit</button>
-                                        </div>
+                                <!-- Pass current url to form view -->
+                                <input name="thisurl" value="{{ request.path_info }}" type="hidden">
+
+                                <input name="thisview" value="{{ request.resolver_match.view_name }}" type="hidden">
+
+                                <div class="row">
+                                    <h4>{{ MyLocation }}</h4>
+                                    <div class="col-md-8">
+                                        {{ form.autocomplete.errors }}
+                                        <label for="{{ form.autofill.id_for_autocomplete }}">Search...</label>
+                                        {{ form.autocomplete }}
                                     </div>
                                 </div>
+
+                                <div class="row">
+                                    <div class="col-md-3">
+                                    {{ form.street_number.errors }}
+                                    <label for="{{ form.street_number.id_for_label }}">Street #</label>
+                                    {{ form.street_number }}
+                                    </div>
+                                    <div class="col-md-5">
+                                    {{ form.route.errors }}
+                                    <label for="{{ form.route.id_for_label }}">Street Name</label>
+                                    {{ form.route }}
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-5">
+                                    {{ form.locality.errors }}
+                                    <label for="{{ form.locality.id_for_label }}">locality</label>
+                                    {{ form.locality }}
+                                    </div>
+                                    <div class="col-md-3">
+                                    {{ form.administrative_area_level_1.errors }}
+                                    <label for="{{ form.administrative_area_level_1.id_for_label }}">city/town</label>
+                                    {{ form.administrative_area_level_1 }}
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                    {{ form.country.errors }}
+                                    <label for="{{ form.country.id_for_label }}">country</label>
+                                    {{ form.country }}
+                                    </div>
+                                    <div class="col-md-4">
+                                    {{ form.postal_code.errors }}
+                                    <label for="{{ form.postal_code.id_for_label }}">zip code</label>
+                                    {{ form.postal_code }}
+                                    </div>
+                                </div>
+
+                                <br>
+                                <input type="submit" value="Submit">
                             </form>
                             <!-- END LOCATION CHANGE FORM -->
 

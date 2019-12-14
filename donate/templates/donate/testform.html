@@ -12,44 +12,64 @@
         <li>{{ form.non_field_errors }}</li>
     </ul>
 
-
     <form action="{% url 'testform' %}" method="post">
         {% csrf_token %}
-        <div class="col-md-5">
 
-        {{ form.autocomplete.errors }}
-        <label for="{{ form.autofill.id_for_autocomplete }}">Search...</label>
-        {{ form.autocomplete }}
+                                <!-- Pass current url to form view -->
+                                <input name="thisurl" value="{{ request.path_info }}" type="hidden">
+                                
+        <div class="row">
+            <div class="col-md-8">
+                {{ form.autocomplete.errors }}
+                <label for="{{ form.autofill.id_for_autocomplete }}">Search...</label>
+                {{ form.autocomplete }}
+            </div>
+        </div>
 
-        {{ form.street_number.errors }}
-        <label for="{{ form.street_number.id_for_label }}">Street #</label>
-        {{ form.street_number }}
+        <div class="row">
+            <div class="col-md-3">
+            {{ form.street_number.errors }}
+            <label for="{{ form.street_number.id_for_label }}">Street #</label>
+            {{ form.street_number }}
+            </div>
+            <div class="col-md-5">
+            {{ form.route.errors }}
+            <label for="{{ form.route.id_for_label }}">Street Name</label>
+            {{ form.route }}
+            </div>
+        </div>
 
-        {{ form.route.errors }}
-        <label for="{{ form.route.id_for_label }}">Street Name</label>
-        {{ form.route }}
+        <div class="row">
+            <div class="col-md-5">
+            {{ form.locality.errors }}
+            <label for="{{ form.locality.id_for_label }}">locality</label>
+            {{ form.locality }}
+            </div>
+            <div class="col-md-3">
+            {{ form.administrative_area_level_1.errors }}
+            <label for="{{ form.administrative_area_level_1.id_for_label }}">city/town</label>
+            {{ form.administrative_area_level_1 }}
+            </div>
+        </div>
 
-        {{ form.locality.errors }}
-        <label for="{{ form.locality.id_for_label }}">locality</label>
-        {{ form.locality }}
-
-        {{ form.administrative_area_level_1.errors }}
-        <label for="{{ form.administrative_area_level_1.id_for_label }}">city/town</label>
-        {{ form.administrative_area_level_1 }}
-
-        {{ form.country.errors }}
-        <label for="{{ form.country.id_for_label }}">country</label>
-        {{ form.country }}
-
-        {{ form.postal_code.errors }}
-        <label for="{{ form.postal_code.id_for_label }}">zip code</label>
-        {{ form.postal_code }}
+        <div class="row">
+            <div class="col-md-4">
+            {{ form.country.errors }}
+            <label for="{{ form.country.id_for_label }}">country</label>
+            {{ form.country }}
+            </div>
+            <div class="col-md-4">
+            {{ form.postal_code.errors }}
+            <label for="{{ form.postal_code.id_for_label }}">zip code</label>
+            {{ form.postal_code }}
+            </div>
+        </div>
 
         <br>
         <input type="submit" value="Submit">
-
-    </div>
     </form>
+
+</div>
 
 
 <!--     <form action="{url 'testform' %}" method="post">

@@ -234,6 +234,8 @@ def discovery(request):
 def user_settings(request):
     ''' Settings page with location change and bag/pickup overview for logged user '''
 
+    form = LocationForm()
+
     # Bags with requests
     myreqbags = Bag.objects.filter(user=request.user, request__isnull=False)
 
@@ -257,6 +259,7 @@ def user_settings(request):
         "MyRequestsFrom": myrequests_from,
         "MyRequestBags": myreqbags,
         "MyAddress": mylocation,
+        "form": form,
     }
 
     return render(request, "donate/settings.html", context)
@@ -441,6 +444,8 @@ def ajax_notifications(request):
 
 def test_form(request):
 
+    print(f"request data {request.POST}")
+
     form = LocationForm()
 
     # Query existing user location
@@ -454,9 +459,12 @@ def test_form(request):
 
     if request.method == 'POST':
 
+        thisurl = request.POST.get('thisurl')[1:]
+
         # Initialize google api-friendly address list
         google_address = []
 
+        # Bind request data to form
         form = LocationForm(request.POST)
 
         if form.is_valid():
@@ -498,7 +506,7 @@ def test_form(request):
                 "form": form,
                 "MyLocation": mylocation
             }
-            return render(request, "donate/testform.html", context)
+            return render(request, f"donate/{thisurl}.html", context)
 
         else:
 
@@ -507,8 +515,8 @@ def test_form(request):
                 "form": form,
                 "MyLocation": mylocation
             }
-            return render(request, "donate/testform.html", context)
-
+            return render(request, f"donate/{thisurl}.html", context)
+            # request.build_absolute_uri(reverse('view_name', args=(obj.pk, )))
 
     context = {
         "form": form,
