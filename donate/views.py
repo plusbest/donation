@@ -211,6 +211,26 @@ def discovery(request):
     coords_dict = {}
     coords_list = []
 
+    # Query logged user
+    logged_user = User.objects.get(id=request.user.id)
+
+    # Get logged user coords
+    my_lat = logged_user.locale.lat
+    my_lng = logged_user.locale.lng
+
+    url = f"https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=Salvation%20Army&inputtype=textquery&fields=geometry,photos,formatted_address,name,opening_hours,rating&locationbias=circle:2000@{my_lat},{my_lng}&key={GOOGLE_API_KEY}"
+
+    # Get API request data
+    r = requests.get(url)
+
+    # JSON format response
+    json_response = r.json()
+
+    # TODO: Only gets first result
+    # Salvation army coords
+    coords = json_response['candidates'][0]['geometry']['location']
+
+
     # Iterate all user locations and store coordinates in dict list
     for location in Location.objects.all():
 
@@ -459,6 +479,7 @@ def test_form(request):
 
     if request.method == 'POST':
 
+        # Gets curated current page URL
         thisurl = request.POST.get('thisurl')[1:]
 
         # Initialize google api-friendly address list
@@ -482,7 +503,7 @@ def test_form(request):
                     setattr(mylocation, str(field.name),
                             request.POST.get(field.name))
 
-            # Retrieve Lat and Lon from API call JSON response
+            # Retrieve Lat and Lng from API call JSON response
             url = f"https://maps.googleapis.com/maps/api/geocode/json?address={google_address}&key={GOOGLE_API_KEY}"
 
             # Get API request data
