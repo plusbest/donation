@@ -218,7 +218,8 @@ def discovery(request):
     my_lat = logged_user.locale.lat
     my_lng = logged_user.locale.lng
 
-    url = f"https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=Salvation%20Army&inputtype=textquery&fields=geometry,photos,formatted_address,name,opening_hours,rating&locationbias=circle:2000@{my_lat},{my_lng}&key={GOOGLE_API_KEY}"
+    # API call for nearby Salvation Army's
+    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={my_lat},{my_lng}&radius=10000&name=Salvation+Army&key={GOOGLE_API_KEY}"
 
     # Get API request data
     r = requests.get(url)
@@ -226,10 +227,21 @@ def discovery(request):
     # JSON format response
     json_response = r.json()
 
-    # TODO: Only gets first result
+    # TODO: Currently only gets first result
     # Salvation army coords
-    coords = json_response['candidates'][0]['geometry']['location']
+    candidate_coords = json_response['results']
 
+    print(candidate_coords)
+    print("***** CANDIDATE JSON RESPONSE *****")
+
+    # Adds candidate (Salvation Army) to coords dict list
+    for candidate in candidate_coords:
+        coords_dict['lat'] = float(candidate['geometry']['location']['lat'])
+        coords_dict['lng'] = float(candidate['geometry']['location']['lng'])
+        coords_dict['candidate'] = "True"
+
+        # Add dict to coords list
+        coords_list.append(dict(coords_dict))
 
     # Iterate all user locations and store coordinates in dict list
     for location in Location.objects.all():
@@ -238,6 +250,7 @@ def discovery(request):
         coords_dict['userid'] = location.user.id
         coords_dict['lat'] = float(location.lat)
         coords_dict['lng'] = float(location.lng)
+        coords_dict['candidate'] = "False"
 
         # Add dict to coords list
         coords_list.append(dict(coords_dict))
