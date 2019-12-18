@@ -59,7 +59,7 @@
                             {% if bag.request != None %}
                             {% if bag.request.approved == False %}
                             <button type="button" class="btn btn-outline-success btn-sm modclick" name="approve" data-req_id="{{ bag.request.id }}">&#10003;</button>
-                            <button type="button" class="btn btn-outline-danger btn-sm modlick" name="deny" data-req_id="{{ bag.request.id }}">&#10007;</button>
+                            <button type="button" class="btn btn-outline-danger btn-sm modclick" name="deny" data-req_id="{{ bag.request.id }}">&#10007;</button>
                             {% else %}
                             <button type="button" class="btn btn-outline-info btn-sm" data-req_id="{{ bag.request.id }}">pending pickup</button>
                             {% endif %}
@@ -88,7 +88,6 @@
 
         // AJAX request only if request mod buttons pressed
         if (e.target.name === ('approve') || ('deny') || ('cancel') || ('complete')) {
-
             // AJAX call to handle request modification
             $.ajax({
                 url: "{% url 'ajax_mod_request' %}",
