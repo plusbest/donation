@@ -220,7 +220,7 @@ def discovery(request):
 
     # API call for nearby Salvation Army's
     url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={my_lat},{my_lng}&radius=10000&name=Salvation+Army&key={GOOGLE_API_KEY}"
-
+    print(f"********** URL:  {url}")
     # Get API request data
     r = requests.get(url)
 
@@ -239,6 +239,7 @@ def discovery(request):
         coords_dict['lat'] = float(candidate['geometry']['location']['lat'])
         coords_dict['lng'] = float(candidate['geometry']['location']['lng'])
         coords_dict['candidate'] = "True"
+        coords_dict['place_name'] = candidate['name']
 
         # Add dict to coords list
         coords_list.append(dict(coords_dict))

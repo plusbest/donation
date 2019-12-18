@@ -73,12 +73,24 @@
         // Iterate through all existing user coordinates
         for (var i = 0; i < coords.length; i++) {
 
+            // DEBUG
+            if (coords[i]['candidate'] == "True") {
+                alert(coords[i]['place_name']);
+            }
+            alert(coords[i]['candidate']);
+
             // Store coordinate lat and lng
             var newcoord = {
                 lat: coords[i]['lat'],
                 lng: coords[i]['lng']
             };
 
+            // TODO:
+            // and create different stylized marker
+            // add marker click event to get place id
+            // API call location (salvation army) details
+
+            // Else
             // Create new marker
             var markers = new google.maps.Marker({
                 position: newcoord,
