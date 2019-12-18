@@ -219,7 +219,7 @@ def discovery(request):
     my_lng = logged_user.locale.lng
 
     # API call for nearby Salvation Army's
-    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={my_lat},{my_lng}&radius=10000&name=Salvation+Army&key={GOOGLE_API_KEY}"
+    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={my_lat},{my_lng}&radius=5000&name=Salvation+Army&key={GOOGLE_API_KEY}"
     print(f"********** URL:  {url}")
     # Get API request data
     r = requests.get(url)

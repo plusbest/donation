@@ -64,20 +64,21 @@
                 center: my_coords
             });
 
-        // The marker, positioned at my_coords
-        var my_marker = new google.maps.Marker({
-            position: my_coords,
-            map: map
-        });
+
+        // ICON IMAGE
+        // var iconimage = {
+        //   url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+        //   // This marker is 20 pixels wide by 32 pixels high.
+        //   size: new google.maps.Size(20, 32),
+        //   // The origin for this image is (0, 0).
+        //   origin: new google.maps.Point(0, 0),
+        //   // The anchor for this image is the base of the flagpole at (0, 32).
+        //   anchor: new google.maps.Point(0, 32)
+        // };
+
 
         // Iterate through all existing user coordinates
         for (var i = 0; i < coords.length; i++) {
-
-            // DEBUG
-            if (coords[i]['candidate'] == "True") {
-                alert(coords[i]['place_name']);
-            }
-            alert(coords[i]['candidate']);
 
             // Store coordinate lat and lng
             var newcoord = {
@@ -90,13 +91,25 @@
             // add marker click event to get place id
             // API call location (salvation army) details
 
-            // Else
-            // Create new marker
-            var markers = new google.maps.Marker({
-                position: newcoord,
-                map: map,
-                userid: coords[i]['userid']
-            });
+
+            // DEBUG
+            // CONDITIONAL FOR DETECTING SALVATION ARMY MARKER
+            if (coords[i]['candidate'] == "True") {
+                var markers = new google.maps.Marker({
+                    position: newcoord,
+                    map: map,
+                    title: "**** SALVATION ARMY MARKER*****",
+                    userid: coords[i]['userid'],
+                });
+            }
+            else {
+                var markers = new google.maps.Marker({
+                    position: newcoord,
+                    map: map,
+                    title: "[[[ IM A USER ]]]]",
+                    userid: coords[i]['userid'],
+                });
+            }
 
             // Add on-click event listener for each marker
             google.maps.event.addListener(markers, 'click', function(event) {
