@@ -383,6 +383,34 @@ def ajax_bagrequest(request):
         return JsonResponse(data)
 
 
+def ajax_donationspot(request):
+    ''' AJAX request to return bags of user at clicked map marker'''
+
+    # Get donation place id
+    place_id = request.GET.get('place_id', None)
+    print(place_id)
+
+    # API CALL
+    url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&fields=name,rating,formatted_phone_number,geometry,opening_hours&key={GOOGLE_API_KEY}"
+
+    message = "You can't request your own bags..."
+
+    r = requests.get(url)
+
+    # JSON format response
+    json_response = r.json()
+
+    store_hours = json_response['result']['opening_hours']['weekday_text']
+
+    data = {
+        "message": "test message",
+        "success": "success",
+        "hours": store_hours,
+    }
+
+    return JsonResponse(data)
+
+
 def ajax_modrequest(request):
     ''' AJAX request handles modification actions to pending requests'''
 

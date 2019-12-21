@@ -108,7 +108,33 @@
 
                 // Trigger Donation Spot Marker AJAX request
                 if (this["place_id"]) {
+                
                     alert("place id detected");
+
+                    $.ajax({
+                        url: "{% url 'ajax_donationspot' %}",
+
+                        // Info to pass into view
+                        data: {
+                            'place_id': this["place_id"],
+                        },
+                        dataType: 'json',
+
+                        // Returns data with message from views.py
+                        success: function(data) {
+                            if (data) {
+
+                                // Show message
+                                alert(data.message);
+                            }
+
+                            // Stylize request button on success to be greyed out
+                            if (data.success) {
+                                alert(data.hours);
+                            }
+                        }
+                    });
+                    // End AJAX
                 }
 
                 // Trigger User Marker AJAX request

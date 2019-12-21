@@ -12,6 +12,7 @@ urlpatterns = [
     path("discover", views.discovery, name="discover"),
     path("settings", views.user_settings, name="settings"),
     path("ajax/bagload", views.ajax_bagload, name="ajax_bag_load"),
+    path("ajax/donationspot", views.ajax_donationspot, name="ajax_donationspot"),
     path("ajax/bagrequest", views.ajax_bagrequest, name="ajax_bag_request"),
     path("ajax/modrequest", views.ajax_modrequest, name="ajax_mod_request"),
     path("ajax/notif", views.ajax_notifications, name="ajax_notif"),
