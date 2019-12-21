@@ -65,18 +65,6 @@
             });
 
 
-        // ICON IMAGE
-        // var iconimage = {
-        //   url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-        //   // This marker is 20 pixels wide by 32 pixels high.
-        //   size: new google.maps.Size(20, 32),
-        //   // The origin for this image is (0, 0).
-        //   origin: new google.maps.Point(0, 0),
-        //   // The anchor for this image is the base of the flagpole at (0, 32).
-        //   anchor: new google.maps.Point(0, 32)
-        // };
-
-
         // Iterate through all existing user coordinates
         for (var i = 0; i < coords.length; i++) {
 
@@ -87,8 +75,6 @@
             };
 
             // TODO:
-            // and create different stylized marker
-            // add marker click event to get place id
             // API call location (salvation army) details
 
 
@@ -99,7 +85,9 @@
                     position: newcoord,
                     map: map,
                     title: "**** SALVATION ARMY MARKER*****",
+                    icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
                     userid: coords[i]['userid'],
+                    place_id: coords[i]['place_id']
                 });
             }
             else {
@@ -114,111 +102,122 @@
             // Add on-click event listener for each marker
             google.maps.event.addListener(markers, 'click', function(event) {
 
+                // TODO: Clear user and bag count as well
                 // Clear previous bag table before new populate
                 document.querySelector('#bag_table').innerHTML = "";
 
-                // Ajax request to return user and bag info of clicked location
-                $.ajax({
+                // Trigger Donation Spot Marker AJAX request
+                if (this["place_id"]) {
+                    alert("place id detected");
+                }
 
-                    url: "{% url 'ajax_bag_load' %}",
+                // Trigger User Marker AJAX request
+                else {
+                    alert("place id not detected");
 
-                    // Info to pass into views.py
-                    data: {
-                        'userid': this["userid"],
-                        'lat': this["position"]["lat"],
-                        'lng': this["position"]["lng"],
-                    },
+                    // Ajax request to return user and bag info of clicked location
+                    $.ajax({
 
-                    dataType: 'json',
+                        url: "{% url 'ajax_bag_load' %}",
 
-                    success: function(data) {
+                        // Info to pass into views.py
+                        data: {
+                            'userid': this["userid"],
+                            'lat': this["position"]["lat"],
+                            'lng': this["position"]["lng"],
+                        },
 
-                        // Receives data from views containing cliicked user's bags
-                        if (data) {
+                        dataType: 'json',
 
-                            // Curate list of bag objects
-                            var bagslist = JSON.parse(data.Bags);
+                        success: function(data) {
 
-                            // User of bags returned
-                            var bag_user = bagslist[0]['fields']['user'];
+                            // Receives data from views containing cliicked user's bags
+                            if (data) {
 
-                            // Table to be populated with User's bag info
-                            var bag_table = document.getElementById('bag_table');
+                                // Curate list of bag objects
+                                var bagslist = JSON.parse(data.Bags);
 
-                            // Apply clicked user to table header
-                            document.querySelector('#target_user').innerHTML = bag_user;
+                                // User of bags returned
+                                var bag_user = bagslist[0]['fields']['user'];
 
-                            // Apply total bags to table header
-                            document.querySelector('#total_bags').innerHTML = bagslist.length;
+                                // Table to be populated with User's bag info
+                                var bag_table = document.getElementById('bag_table');
 
-                            // Add bag as table data
-                            for (var j = 0; j < bagslist.length; j++) {
+                                // Apply clicked user to table header
+                                document.querySelector('#target_user').innerHTML = bag_user;
 
-                                const tr = document.createElement('tr');
-                                const td_weight = document.createElement('td');
+                                // Apply total bags to table header
+                                document.querySelector('#total_bags').innerHTML = bagslist.length;
 
-                                // Adds bag weight to row
-                                td_weight.innerHTML = `${bagslist[j]['fields']['lbs']} lbs.`;
-                                tr.append(td_weight);
+                                // Add bag as table data
+                                for (var j = 0; j < bagslist.length; j++) {
 
-                                // Check if categories present, add none if not
-                                if (bagslist[j]['fields']['category'].length == 0) {
-                                    var categ = "(none)";
-                                    var td_category = document.createElement('td');
-                                    td_category.append(categ);
-                                } else {
-                                    // Iterate bag categories
-                                    for (var k = 0; k < bagslist[j]['fields']['category'].length; k++) {
+                                    const tr = document.createElement('tr');
+                                    const td_weight = document.createElement('td');
 
-                                        // Create button element
-                                        var btn = document.createElement('button');
+                                    // Adds bag weight to row
+                                    td_weight.innerHTML = `${bagslist[j]['fields']['lbs']} lbs.`;
+                                    tr.append(td_weight);
 
-                                        // Button attributes and styles
-                                        btn.setAttribute("type", "button");
-                                        btn.classList.add("btn");
-                                        btn.classList.add("btn-outline-secondary");
-                                        btn.classList.add("btn-xs");
-                                        btn.innerHTML = bagslist[j]['fields']['category'];
-
-                                        // Adds bag category as table data
+                                    // Check if categories present, add none if not
+                                    if (bagslist[j]['fields']['category'].length == 0) {
+                                        var categ = "(none)";
                                         var td_category = document.createElement('td');
-                                        td_category.append(btn);
+                                        td_category.append(categ);
+                                    } else {
+                                        // Iterate bag categories
+                                        for (var k = 0; k < bagslist[j]['fields']['category'].length; k++) {
+
+                                            // Create button element
+                                            var btn = document.createElement('button');
+
+                                            // Button attributes and styles
+                                            btn.setAttribute("type", "button");
+                                            btn.classList.add("btn");
+                                            btn.classList.add("btn-outline-secondary");
+                                            btn.classList.add("btn-xs");
+                                            btn.innerHTML = bagslist[j]['fields']['category'];
+
+                                            // Adds bag category as table data
+                                            var td_category = document.createElement('td');
+                                            td_category.append(btn);
+                                        }
+
                                     }
 
+                                    // Add table data to table row
+                                    tr.append(td_category);
+
+                                    // Create button element
+                                    var btn = document.createElement('button');
+
+                                    // Button attributes and styles
+                                    btn.setAttribute("name", "pickup_bag");
+                                    btn.setAttribute("type", "button");
+                                    btn.classList.add("btn");
+                                    btn.classList.add("btn-outline-info");
+                                    btn.classList.add("btn-sm");
+                                    btn.classList.add("btn-request");
+                                    btn.innerHTML = "request";
+                                    btn.id = "requestbag-btn";
+                                    btn.dataset.bagid = bagslist[j]['pk']; // BagID
+                                    btn.dataset.baguser = bagslist[j]['fields']['user']; // BagUser
+
+                                    // Add request button to table data
+                                    var td_btn = document.createElement('td');
+                                    td_btn.append(btn);
+
+                                    // Add table data to row
+                                    tr.append(td_btn);
+
+                                    // Add row to bag table
+                                    document.querySelector('#bag_table').append(tr);
                                 }
-
-                                // Add table data to table row
-                                tr.append(td_category);
-
-                                // Create button element
-                                var btn = document.createElement('button');
-
-                                // Button attributes and styles
-                                btn.setAttribute("name", "pickup_bag");
-                                btn.setAttribute("type", "button");
-                                btn.classList.add("btn");
-                                btn.classList.add("btn-outline-info");
-                                btn.classList.add("btn-sm");
-                                btn.classList.add("btn-request");
-                                btn.innerHTML = "request";
-                                btn.id = "requestbag-btn";
-                                btn.dataset.bagid = bagslist[j]['pk']; // BagID
-                                btn.dataset.baguser = bagslist[j]['fields']['user']; // BagUser
-
-                                // Add request button to table data
-                                var td_btn = document.createElement('td');
-                                td_btn.append(btn);
-
-                                // Add table data to row
-                                tr.append(td_btn);
-
-                                // Add row to bag table
-                                document.querySelector('#bag_table').append(tr);
                             }
                         }
-                    }
-                });
-                // End AJAX
+                    });
+                    // End Donation AJAX
+                }
             });
             // End GOOGLE MAPS CLICK marker listener
         }

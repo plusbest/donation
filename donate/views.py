@@ -227,19 +227,22 @@ def discovery(request):
     # JSON format response
     json_response = r.json()
 
-    # TODO: Currently only gets first result
-    # Salvation army coords
+    # Store all nearby results
     candidate_coords = json_response['results']
 
+    print("***** START -- CANDIDATE JSON RESPONSE *****")
     print(candidate_coords)
-    print("***** CANDIDATE JSON RESPONSE *****")
+    print("***** END -- CANDIDATE JSON RESPONSE *****")
 
     # Adds candidate (Salvation Army) to coords dict list
     for candidate in candidate_coords:
         coords_dict['lat'] = float(candidate['geometry']['location']['lat'])
         coords_dict['lng'] = float(candidate['geometry']['location']['lng'])
         coords_dict['candidate'] = "True"
+        coords_dict['place_id'] = candidate['place_id']
         coords_dict['place_name'] = candidate['name']
+
+        print(f"***** place ID ***** : {candidate['place_id']}")
 
         # Add dict to coords list
         coords_list.append(dict(coords_dict))
