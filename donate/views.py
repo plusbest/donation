@@ -400,11 +400,13 @@ def ajax_donationspot(request):
     # JSON format response
     json_response = r.json()
 
+    # Store hours of operation
     store_hours = json_response['result']['opening_hours']['weekday_text']
+    store_name = json_response['result']['name']
 
     data = {
         "message": "test message",
-        "success": "success",
+        "name": store_name,
         "hours": store_hours,
     }
 
