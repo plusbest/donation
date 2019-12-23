@@ -257,11 +257,12 @@ def discovery(request):
         coords_dict['candidate'] = "True"
         coords_dict['place_id'] = candidate['place_id']
         coords_dict['place_name'] = candidate['name']
-        testtest = ""
-        coords_dict['hours'] = testtest.join(json_response_placeinfo['result']['opening_hours']['weekday_text'])
+        coords_dict['hours'] = json_response_placeinfo['result']['opening_hours']['weekday_text']
 
         # Add dict to coords list
         coords_list.append(dict(coords_dict))
+
+        print(f"========HOURS====== {coords_dict['hours']}")
 
     # Iterate all user locations and store coordinates in dict list
     for location in Location.objects.all():

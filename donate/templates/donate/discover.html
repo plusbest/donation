@@ -74,19 +74,23 @@
                 lng: coords[i]['lng']
             };
 
-            // Detects clicked marker type and creates styl accordingly
-
             // Donation store type detect
             if (coords[i]['candidate'] == "True") {
+
+                // Create info window
+                var infowindow = new google.maps.InfoWindow({
+                    content: JSON.stringify(coords[i]['hours'])
+                });
 
                 // Marker create
                 var markers = new google.maps.Marker({
                     position: newcoord,
                     map: map,
-                    title: coords[i]['hours'],
+                    title: "test title",
                     icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
                     userid: coords[i]['userid'],
-                    place_id: coords[i]['place_id']
+                    place_id: coords[i]['place_id'],
+                    infowindow: infowindow,
                 });
             }
 
@@ -110,6 +114,9 @@
                 // Trigger Donation Spot Marker AJAX request
                 if (this["place_id"]) {
 
+                    // Info window open event for click listener
+                    this['infowindow'].open(map, this);
+
                     alert("place id detected");
 
                     $.ajax({
@@ -129,14 +136,6 @@
                                 // Append store name and hours to table
                                 document.querySelector('#target_user').innerHTML = data.name;
                                 document.querySelector('#total_bags').innerHTML = data.hours;
-
-                                // Create info window
-                                var infowindow = new google.maps.InfoWindow({
-                                    content: "test"
-                                });
-
-                                // Info window open
-                                infowindow.open(map, this);
                             }
                         }
                     });
