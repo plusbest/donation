@@ -77,20 +77,31 @@
             // Donation store type detect
             if (coords[i]['candidate'] == "True") {
 
+                var name_li = `<li><b>${coords[i]['place_name']}</b></li>`;
+                var hours_list = '';
+
+                for (var j = 0; j < coords[i]['hours'].length; j++) {
+                    hours_list += `<li>${coords[i]['hours'][j]}</li>`;
+                }
+
+                contentString = `<ul>${name_li}${hours_list}</ul>`;
+
                 // Create info window
                 var infowindow = new google.maps.InfoWindow({
-                    content: JSON.stringify(coords[i]['hours'])
+
+                    // TODO: Curate content for info window
+                    content: contentString
                 });
 
                 // Marker create
                 var markers = new google.maps.Marker({
                     position: newcoord,
                     map: map,
+                    infowindow: infowindow,
                     title: "test title",
                     icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
                     userid: coords[i]['userid'],
                     place_id: coords[i]['place_id'],
-                    infowindow: infowindow,
                 });
             }
 
@@ -114,10 +125,8 @@
                 // Trigger Donation Spot Marker AJAX request
                 if (this["place_id"]) {
 
-                    // Info window open event for click listener
+                    // Opens info window object
                     this['infowindow'].open(map, this);
-
-                    alert("place id detected");
 
                     $.ajax({
                         url: "{% url 'ajax_donationspot' %}",
@@ -140,16 +149,6 @@
                         }
                     });
                     // End AJAX
-
-                    // TODO: Rethink AJAX for this google maps API call
-                    // Create info window
-                    // var infowindow = new google.maps.InfoWindow({
-                    //     content: "test"
-                    // });
-
-                    // // Info window open
-                    // infowindow.open(map, this);
-
                 }
 
                 // Trigger User Marker AJAX request

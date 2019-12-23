@@ -262,8 +262,6 @@ def discovery(request):
         # Add dict to coords list
         coords_list.append(dict(coords_dict))
 
-        print(f"========HOURS====== {coords_dict['hours']}")
-
     # Iterate all user locations and store coordinates in dict list
     for location in Location.objects.all():
 
