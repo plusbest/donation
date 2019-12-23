@@ -218,17 +218,17 @@ def discovery(request):
     my_lat = logged_user.locale.lat
     my_lng = logged_user.locale.lng
 
-    # API call for nearby Salvation Army's
+    # API call for nearby Salvation Army locations
     url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={my_lat},{my_lng}&radius=5000&name=Salvation+Army&key={GOOGLE_API_KEY}"
     print(f"********** URL:  {url}")
     # Get API request data
     r = requests.get(url)
 
     # JSON format response
-    json_response = r.json()
+    json_response_nearby = r.json()
 
     # Store all nearby results
-    candidate_coords = json_response['results']
+    candidate_coords = json_response_nearby['results']
 
     print("***** START -- CANDIDATE JSON RESPONSE *****")
     print(candidate_coords)
@@ -236,13 +236,29 @@ def discovery(request):
 
     # Adds candidate (Salvation Army) to coords dict list
     for candidate in candidate_coords:
+
+        # Donation store's google place ID
+        place_id = candidate['place_id']
+
+        # API call for candidate store details
+        url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&fields=name,rating,formatted_phone_number,geometry,opening_hours&key={GOOGLE_API_KEY}"
+
+        r = requests.get(url)
+
+        # JSON format response
+        json_response_placeinfo = r.json()
+
+        # Store hours of operation
+        store_hours = json_response_placeinfo['result']['opening_hours']['weekday_text']
+        store_name = json_response_placeinfo['result']['name']
+
         coords_dict['lat'] = float(candidate['geometry']['location']['lat'])
         coords_dict['lng'] = float(candidate['geometry']['location']['lng'])
         coords_dict['candidate'] = "True"
         coords_dict['place_id'] = candidate['place_id']
         coords_dict['place_name'] = candidate['name']
-
-        print(f"***** place ID ***** : {candidate['place_id']}")
+        testtest = ""
+        coords_dict['hours'] = testtest.join(json_response_placeinfo['result']['opening_hours']['weekday_text'])
 
         # Add dict to coords list
         coords_list.append(dict(coords_dict))
@@ -393,7 +409,7 @@ def ajax_donationspot(request):
     # API CALL
     url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&fields=name,rating,formatted_phone_number,geometry,opening_hours&key={GOOGLE_API_KEY}"
 
-    message = "You can't request your own bags..."
+    message = "placeholder message"
 
     r = requests.get(url)
 

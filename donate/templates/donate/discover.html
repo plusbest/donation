@@ -83,7 +83,7 @@
                 var markers = new google.maps.Marker({
                     position: newcoord,
                     map: map,
-                    title: "**** SALVATION ARMY MARKER*****",
+                    title: coords[i]['hours'],
                     icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
                     userid: coords[i]['userid'],
                     place_id: coords[i]['place_id']
@@ -129,20 +129,27 @@
                                 // Append store name and hours to table
                                 document.querySelector('#target_user').innerHTML = data.name;
                                 document.querySelector('#total_bags').innerHTML = data.hours;
+
+                                // Create info window
+                                var infowindow = new google.maps.InfoWindow({
+                                    content: "test"
+                                });
+
+                                // Info window open
+                                infowindow.open(map, this);
                             }
                         }
                     });
                     // End AJAX
 
-
                     // TODO: Rethink AJAX for this google maps API call
                     // Create info window
-                    var infowindow = new google.maps.InfoWindow({
-                        content: "test"
-                    });
+                    // var infowindow = new google.maps.InfoWindow({
+                    //     content: "test"
+                    // });
 
-                    // Info window open
-                    infowindow.open(map, this);
+                    // // Info window open
+                    // infowindow.open(map, this);
 
                 }
 
