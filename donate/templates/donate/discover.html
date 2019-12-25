@@ -27,6 +27,14 @@
                         <th scope="col"></th>
                         <th scope="col">total bags: <span id="total_bags"></span></th>
                     </tr>
+
+                    <!-- Make hidden then JS unhide on proper marker click -->
+                    <!-- Preserve previous bag list on unhide. Re-hide on new bag click? -->
+                    <tr>
+                        <th scope="col">Store: <span id="target_user"></span></th>
+                        <th scope="col">Hours: <span id="target_user"></span></th>
+                    </tr>
+
                     <tr>
                         <th scope="col">weight</th>
                         <th scope="col">category</th>
@@ -74,31 +82,46 @@
                 lng: coords[i]['lng']
             };
 
-            // Donation store type detect
+            // Donation Store type detect
             if (coords[i]['candidate'] == "True") {
 
-                var name_li = `<li><b>${coords[i]['place_name']}</b></li>`;
-                var hours_list = '';
+                const h6 = document.createElement('h5');
+                const ul = document.createElement('ul');
+                const li = document.createElement('li');
 
+                // Donation Spot header object
+                h6.innerHTML = coords[i]['place_name'];
+
+                // Add header to hours list
+                // CONSIDER: Replace with adding to contentString
+                ul.innerHTML += h6.outerHTML;
+
+                // Iterate open days hours list
                 for (var j = 0; j < coords[i]['hours'].length; j++) {
-                    hours_list += `<li>${coords[i]['hours'][j]}</li>`;
+
+                    // Add day's hours to list element
+                    li.innerHTML = coords[i]['hours'][j];
+
+                    // Append list item to hours list
+                    ul.innerHTML += li.outerHTML;
                 }
 
-                contentString = `<ul>${name_li}${hours_list}</ul>`;
+                // Append curated info for infowindow
+                var contentString = ul.outerHTML;
 
                 // Create info window
                 var infowindow = new google.maps.InfoWindow({
 
-                    // TODO: Curate content for info window
+                    // Append info window string
                     content: contentString
                 });
 
-                // Marker create
+                // Create Donation Spot marker
                 var markers = new google.maps.Marker({
                     position: newcoord,
                     map: map,
                     infowindow: infowindow,
-                    title: "test title",
+                    title: "*** Donation Store marker",
                     icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
                     userid: coords[i]['userid'],
                     place_id: coords[i]['place_id'],
@@ -107,11 +130,12 @@
 
             // User type detect
             else {
-                // Marker create
+
+                // Create User marker
                 var markers = new google.maps.Marker({
                     position: newcoord,
                     map: map,
-                    title: "[[[ IM A USER ]]]]",
+                    title: "*** User marker ***",
                     userid: coords[i]['userid'],
                 });
             }
@@ -124,6 +148,8 @@
 
                 // Trigger Donation Spot Marker AJAX request
                 if (this["place_id"]) {
+
+                    // TODO: DOM unhide and append store name and hours here.
 
                     // Opens info window object
                     this['infowindow'].open(map, this);
@@ -141,10 +167,13 @@
                         success: function(data) {
                             if (data) {
 
+                                alert(data.name);
                                 // TODO: Needs styling
                                 // Append store name and hours to table
-                                document.querySelector('#target_user').innerHTML = data.name;
-                                document.querySelector('#total_bags').innerHTML = data.hours;
+
+                                // Commenting out for debug and test of unhide element trigger
+                                // document.querySelector('#target_user').innerHTML = data.name;
+                                // document.querySelector('#total_bags').innerHTML = data.hours;
                             }
                         }
                     });
