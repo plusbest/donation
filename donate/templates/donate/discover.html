@@ -2,6 +2,8 @@
 
 {% block body %}
 
+{% load static %}
+
 <div class="container">
 
     <!-- Google Maps API for Initializing Map -->
@@ -126,7 +128,7 @@
                     map: map,
                     infowindow: infowindow,
                     title: "*** Donation Store marker",
-                    icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+                    icon: "{% static 'donate/media/salvation_army_icon.png' %}",
                     userid: coords[i]['userid'],
                     place_id: coords[i]['place_id'],
                 });
@@ -140,6 +142,7 @@
                     position: newcoord,
                     map: map,
                     title: "*** User marker ***",
+                    icon: "{% static 'donate/media/user_icon_blue.png' %}",
                     userid: coords[i]['userid'],
                 });
             }
@@ -172,10 +175,6 @@
                         success: function(data) {
                             if (data) {
 
-                                alert(data.name);
-                                // TODO: Needs styling
-                                // Append store name and hours to table
-
                                 // Hide Donation User info row
                                 document.querySelector('#bag_user_info_row').hidden = true;
 
@@ -195,8 +194,6 @@
 
                 // Trigger User Marker AJAX request
                 else {
-
-                    alert("Nearby user clicked");
 
                     // Hide Donation Spot info row
                     document.querySelector('#donation_spot_info_row').hidden = true;
