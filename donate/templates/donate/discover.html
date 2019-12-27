@@ -96,7 +96,6 @@
                 h5.innerHTML = coords[i]['place_name'];
 
                 // Add header to hours list
-                // CONSIDER: Replace with adding to contentString
                 ul.innerHTML += h5.outerHTML;
 
                 // Offset webkit -40px default
@@ -122,6 +121,9 @@
                     content: contentString
                 });
 
+                // CONSIDER DESGIN: abstract marker creation and use conditionals
+                // to determine marker attributes
+
                 // Create Donation Spot marker
                 var markers = new google.maps.Marker({
                     position: newcoord,
@@ -131,6 +133,19 @@
                     icon: "{% static 'donate/media/salvation_army_icon.png' %}",
                     userid: coords[i]['userid'],
                     place_id: coords[i]['place_id'],
+                });
+            }
+
+            // Current user type detect
+
+            else if (coords[i]['candidate'] == "MeUser") {
+
+                // Create Current User Marker
+                var markers = new google.maps.Marker({
+                    position: newcoord,
+                    map: map,
+                    title: "*** MeUser Marker ***",
+                    userid: coords[i]['userid'],
                 });
             }
 
@@ -156,7 +171,6 @@
                 // Trigger Donation Spot Marker AJAX request
                 if (this["place_id"]) {
 
-                    // CONSIDER: DOM unhide and append store name and hours here.
                     // TODO: Close previous infowindows
 
                     // Opens info window object

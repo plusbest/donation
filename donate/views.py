@@ -269,7 +269,11 @@ def discovery(request):
         coords_dict['userid'] = location.user.id
         coords_dict['lat'] = float(location.lat)
         coords_dict['lng'] = float(location.lng)
-        coords_dict['candidate'] = "False"
+
+        if request.user.id == location.user.id:
+            coords_dict['candidate'] = "MeUser"
+        else:
+            coords_dict['candidate'] = "False"
 
         # Add dict to coords list
         coords_list.append(dict(coords_dict))
