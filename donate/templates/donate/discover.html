@@ -22,17 +22,18 @@
         <div class="col-md-12">
             <table class="table table-hover">
                 <thead>
-                    <tr>
-                        <th scope="col">user: <span id="target_user"></span></th>
+                    <tr id="bag_user_info_row" hidden="true">
+                        <th scope="col">User | <span id="target_user"></span></th>
                         <th scope="col"></th>
-                        <th scope="col">total bags: <span id="total_bags"></span></th>
+                        <th scope="col">Total Bags | <span id="total_bags"></span></th>
                     </tr>
 
                     <!-- Make hidden then JS unhide on proper marker click -->
                     <!-- Preserve previous bag list on unhide. Re-hide on new bag click? -->
-                    <tr>
-                        <th scope="col">Store: <span id="target_user"></span></th>
-                        <th scope="col">Hours: <span id="target_user"></span></th>
+                    <tr id="donation_spot_info_row" hidden="true">
+                        <th scope="col">Store: <span id="target_store"></span></th>
+                        <th scope="col"></th>
+                        <th scope="col">Hours: <span id="store_hours"></span></th>
                     </tr>
 
                     <tr>
@@ -85,16 +86,19 @@
             // Donation Store type detect
             if (coords[i]['candidate'] == "True") {
 
-                const h6 = document.createElement('h5');
+                const h5 = document.createElement('h5');
                 const ul = document.createElement('ul');
                 const li = document.createElement('li');
 
                 // Donation Spot header object
-                h6.innerHTML = coords[i]['place_name'];
+                h5.innerHTML = coords[i]['place_name'];
 
                 // Add header to hours list
                 // CONSIDER: Replace with adding to contentString
-                ul.innerHTML += h6.outerHTML;
+                ul.innerHTML += h5.outerHTML;
+
+                // Offset webkit -40px default
+                ul.setAttribute("style", "margin-left: -40px;");
 
                 // Iterate open days hours list
                 for (var j = 0; j < coords[i]['hours'].length; j++) {
@@ -149,7 +153,8 @@
                 // Trigger Donation Spot Marker AJAX request
                 if (this["place_id"]) {
 
-                    // TODO: DOM unhide and append store name and hours here.
+                    // CONSIDER: DOM unhide and append store name and hours here.
+                    // TODO: Close previous infowindows
 
                     // Opens info window object
                     this['infowindow'].open(map, this);
@@ -171,9 +176,17 @@
                                 // TODO: Needs styling
                                 // Append store name and hours to table
 
-                                // Commenting out for debug and test of unhide element trigger
-                                // document.querySelector('#target_user').innerHTML = data.name;
-                                // document.querySelector('#total_bags').innerHTML = data.hours;
+                                // Hide Donation User info row
+                                document.querySelector('#bag_user_info_row').hidden = true;
+
+                                // Unhide Donation Spot info row
+                                document.querySelector('#donation_spot_info_row').hidden = false;
+
+                                // Apply marker's user
+                                document.querySelector('#target_store').innerHTML = data.name;
+
+                                // Apply user's total bag count
+                                document.querySelector('#store_hours').innerHTML = data.hours;
                             }
                         }
                     });
@@ -183,7 +196,13 @@
                 // Trigger User Marker AJAX request
                 else {
 
-                    alert("place id not detected");
+                    alert("Nearby user clicked");
+
+                    // Hide Donation Spot info row
+                    document.querySelector('#donation_spot_info_row').hidden = true;
+
+                    // Unhide Donation Spot info row
+                    document.querySelector('#bag_user_info_row').hidden = false;
 
                     // Ajax request to return user and bag info of clicked location
                     $.ajax({
@@ -213,10 +232,10 @@
                                 // Table to be populated with User's bag info
                                 var bag_table = document.getElementById('bag_table');
 
-                                // Apply clicked user to table header
+                                // Apply marker's user
                                 document.querySelector('#target_user').innerHTML = bag_user;
 
-                                // Apply total bags to table header
+                                // Apply user's total bag count
                                 document.querySelector('#total_bags').innerHTML = bagslist.length;
 
                                 // Add bag as table data
