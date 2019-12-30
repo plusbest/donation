@@ -167,9 +167,8 @@
             google.maps.event.addListener(markers, 'click', function(event) {
 
 
-                // Re-center map to clicked marker position
-                // TODO: only working for Donation Store marker
-                map.center = this.getPosition();
+                // Pan to clicked marker position
+                map.panTo(this.getPosition());
 
 
                 // Clear previous user bag list
