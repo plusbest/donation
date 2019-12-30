@@ -145,6 +145,7 @@
                     position: newcoord,
                     map: map,
                     title: "*** MeUser Marker ***",
+                    icon: "{% static 'donate/media/home_icon.png' %}",
                     userid: coords[i]['userid'],
                 });
             }
@@ -164,6 +165,12 @@
 
             // Add on-click event listener for newly created marker
             google.maps.event.addListener(markers, 'click', function(event) {
+
+
+                // Re-center map to clicked marker position
+                // TODO: only working for Donation Store marker
+                map.center = this.getPosition();
+
 
                 // Clear previous user bag list
                 document.querySelector('#bag_table').innerHTML = "";
@@ -264,18 +271,21 @@
                                         var categ = "(none)";
                                         var td_category = document.createElement('td');
                                         td_category.append(categ);
-                                    } else {
+                                    } 
+                                    else {
                                         // Iterate bag categories
                                         for (var k = 0; k < bagslist[j]['fields']['category'].length; k++) {
 
                                             // Create button element
-                                            var btn = document.createElement('button');
+                                            const btn = document.createElement('button');
 
                                             // Button attributes and styles
                                             btn.setAttribute("type", "button");
                                             btn.classList.add("btn");
                                             btn.classList.add("btn-outline-secondary");
                                             btn.classList.add("btn-xs");
+
+                                            // Add category as button name
                                             btn.innerHTML = bagslist[j]['fields']['category'];
 
                                             // Adds bag category as table data
