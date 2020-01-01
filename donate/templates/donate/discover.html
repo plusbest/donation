@@ -85,6 +85,10 @@
                 lng: coords[i]['lng']
             };
 
+            // Temporary storage for infowindow
+            // Intended for close function on new marker click
+            var prev_infowindow = false;
+
             // Donation Store type detect
             if (coords[i]['candidate'] == "True") {
 
@@ -137,7 +141,6 @@
             }
 
             // Current user type detect
-
             else if (coords[i]['candidate'] == "MeUser") {
 
                 // Create Current User Marker
@@ -166,16 +169,25 @@
             // Add on-click event listener for newly created marker
             google.maps.event.addListener(markers, 'click', function(event) {
 
+                // Close previous window if exists
+                if (prev_infowindow) {
+                    prev_infowindow.close();
+                }
+
+                // Store infowindow to temp variable 
+                if (this['infowindow']) {
+                    prev_infowindow = this['infowindow'];
+                }
 
                 // Pan to clicked marker position
                 map.panTo(this.getPosition());
-
 
                 // Clear previous user bag list
                 document.querySelector('#bag_table').innerHTML = "";
 
                 // Trigger Donation Spot Marker AJAX request
                 if (this["place_id"]) {
+
 
                     // TODO: Close previous infowindows
 
