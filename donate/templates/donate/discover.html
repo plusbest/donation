@@ -186,10 +186,7 @@
                 document.querySelector('#bag_table').innerHTML = "";
 
                 // Trigger Donation Spot Marker AJAX request
-                if (this["place_id"]) {
-
-
-                    // TODO: Close previous infowindows
+                if (this['place_id'] && this['infowindow']) {
 
                     // Opens info window object
                     this['infowindow'].open(map, this);
