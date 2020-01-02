@@ -435,6 +435,9 @@ def ajax_donationspot(request):
 def ajax_modrequest(request):
     ''' AJAX request handles modification actions to pending requests'''
 
+    # Store requested page
+    current_page = request.GET.get('current_page', None)
+
     # Store requested action type
     mod_type = request.GET.get('mod_type', None)
 
@@ -508,7 +511,7 @@ def ajax_modrequest(request):
 
     data = {
         "message": message,
-        "url": reverse("bag"),
+        "url": reverse(current_page),
     }
 
     return JsonResponse(data)
