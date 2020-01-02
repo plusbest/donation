@@ -38,7 +38,7 @@
                         <th scope="col">Hours: <span id="store_hours"></span></th>
                     </tr>
 
-                    <tr>
+                    <tr id="bag_info_row" hidden="true">
                         <th scope="col">weight</th>
                         <th scope="col">category</th>
                         <th scope="col"></th>
@@ -204,6 +204,9 @@
                         success: function(data) {
                             if (data) {
 
+                                // Hide Bag info row
+                                document.querySelector('#bag_info_row').hidden = true;
+
                                 // Hide Donation User info row
                                 document.querySelector('#bag_user_info_row').hidden = true;
 
@@ -227,8 +230,11 @@
                     // Hide Donation Spot info row
                     document.querySelector('#donation_spot_info_row').hidden = true;
 
-                    // Unhide Donation Spot info row
+                    // Unhide Bag User info row
                     document.querySelector('#bag_user_info_row').hidden = false;
+
+                    // Unhide Bag info row
+                    document.querySelector('#bag_info_row').hidden = false;
 
                     // Ajax request to return user and bag info of clicked location
                     $.ajax({
