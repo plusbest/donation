@@ -36,6 +36,7 @@
                         <th scope="col">Store: <span id="target_store"></span></th>
                         <th scope="col"></th>
                         <th scope="col">Hours: <span id="store_hours"></span></th>
+                        <th scope="col">Address: <span id="store_address"></span></th>
                     </tr>
 
                     <tr id="bag_info_row" hidden="true">
@@ -55,7 +56,7 @@
     // Initialize and add Google Map
     function initMap() {
 
-        // Parse user and coordinate information passed in from views.py
+        // Parse all users' coordinate information passed in from views.py
         var coords = JSON.parse('{{ NearbyCoordsJSON|safe }}');
 
         // Properly store user location coordinates
@@ -89,8 +90,8 @@
             // Intended for close function on new marker click
             var prev_infowindow = false;
 
-            // Donation Store type detect
-            if (coords[i]['candidate'] == "True") {
+            // Donation Spot type detect
+            if (coords[i]['coord_type'] == "DonationSpot") {
 
                 const h5 = document.createElement('h5');
                 const ul = document.createElement('ul');
@@ -133,7 +134,7 @@
                     position: newcoord,
                     map: map,
                     infowindow: infowindow,
-                    title: "*** Donation Store marker",
+                    title: "*** Donation Spot marker",
                     icon: "{% static 'donate/media/salvation_army_icon.png' %}",
                     userid: coords[i]['userid'],
                     place_id: coords[i]['place_id'],
@@ -141,7 +142,7 @@
             }
 
             // Current user type detect
-            else if (coords[i]['candidate'] == "MeUser") {
+            else if (coords[i]['coord_type'] == "MeUser") {
 
                 // Create Current User Marker
                 var markers = new google.maps.Marker({
@@ -153,7 +154,7 @@
                 });
             }
 
-            // User type detect
+            // Nearby user type detect
             else {
 
                 // Create User marker
@@ -163,7 +164,7 @@
                     title: "*** User marker ***",
                     icon: "{% static 'donate/media/user_icon_blue.png' %}",
                     userid: coords[i]['userid'],
-                });
+                }); 
             }
 
             // Add on-click event listener for newly created marker
@@ -218,6 +219,9 @@
 
                                 // Apply user's total bag count
                                 document.querySelector('#store_hours').innerHTML = data.hours;
+
+                                // Apply user's total bag count
+                                document.querySelector('#store_address').innerHTML = data.address;
                             }
                         }
                     });

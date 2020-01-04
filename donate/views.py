@@ -219,6 +219,7 @@ def discovery(request):
     my_lng = logged_user.locale.lng
 
     # API call for nearby Salvation Army locations
+    # Results retured as 'candidates'
     url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={my_lat},{my_lng}&radius=5000&name=Salvation+Army&key={GOOGLE_API_KEY}"
 
     # Get API request data
@@ -229,10 +230,6 @@ def discovery(request):
 
     # Store all nearby results
     candidate_coords = json_response_nearby['results']
-
-    print("***** START -- CANDIDATE JSON RESPONSE *****")
-    print(candidate_coords)
-    print("***** END -- CANDIDATE JSON RESPONSE *****")
 
     # Adds candidate (Salvation Army) to coords dict list
     for candidate in candidate_coords:
@@ -254,7 +251,7 @@ def discovery(request):
 
         coords_dict['lat'] = float(candidate['geometry']['location']['lat'])
         coords_dict['lng'] = float(candidate['geometry']['location']['lng'])
-        coords_dict['candidate'] = "True"
+        coords_dict['coord_type'] = "DonationSpot"
         coords_dict['place_id'] = candidate['place_id']
         coords_dict['place_name'] = candidate['name']
         coords_dict['hours'] = json_response_placeinfo['result']['opening_hours']['weekday_text']
@@ -271,16 +268,15 @@ def discovery(request):
         coords_dict['lng'] = float(location.lng)
 
         if request.user.id == location.user.id:
-            coords_dict['candidate'] = "MeUser"
+            coords_dict['coord_type'] = "MeUser"
         else:
-            coords_dict['candidate'] = "False"
+            coords_dict['coord_type'] = "User"
 
         # Add dict to coords list
         coords_list.append(dict(coords_dict))
 
     context = {
         "MyAddress": Location.objects.get(user__id=request.user.id),
-        "NearbyCoords": coords_list,
         "NearbyCoordsJSON": json.dumps(coords_list),  # Note json.dumps()
     }
 
@@ -327,11 +323,12 @@ def ajax_bagload(request):
     # Get requested user
     userid = request.GET.get('userid', None)
 
-    # Query all available (no request pending) bags of clicked user
+    # Query available bags (no pending request)
     bagtemp = Bag.objects.filter(user__id=int(userid), request__isnull=True)
 
     '''Serialize queryset for JSON using 'natural key = True'
-        allows for ManyToMany field to return string instead of id.'''
+        allows for ManyToMany field (category) to return string 
+        instead of id.'''
     bagdump = serializers.serialize(
         'python', bagtemp, use_natural_foreign_keys=True)
 
@@ -407,10 +404,9 @@ def ajax_donationspot(request):
 
     # Get donation place id
     place_id = request.GET.get('place_id', None)
-    print(place_id)
 
     # API CALL
-    url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&fields=name,rating,formatted_phone_number,geometry,opening_hours&key={GOOGLE_API_KEY}"
+    url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&fields=name,rating,formatted_address,formatted_phone_number,geometry,opening_hours&key={GOOGLE_API_KEY}"
 
     message = "placeholder message"
 
@@ -419,14 +415,18 @@ def ajax_donationspot(request):
     # JSON format response
     json_response = r.json()
 
-    # Store hours of operation
+    # Donation Spot information
     store_hours = json_response['result']['opening_hours']['weekday_text']
     store_name = json_response['result']['name']
+    store_address = json_response['result']['formatted_address']
+    store_phone = json_response['result']['formatted_phone_number']
 
     data = {
         "message": "test message",
         "name": store_name,
         "hours": store_hours,
+        "address": store_address,
+        "phone": store_phone,
     }
 
     return JsonResponse(data)
@@ -584,7 +584,7 @@ def test_form(request):
             # Obtain coordinates from API response
             coord = json_response['results'][0]['geometry']['location']
 
-            # Set Location object with new coords
+            # Set Location object with new
             mylocation.lat = coord['lat']
             mylocation.lng = coord['lng']
 
