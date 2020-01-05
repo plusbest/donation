@@ -339,6 +339,8 @@ def ajax_bagload(request):
         "Bags": bagjson,
     }
 
+    print(f"*****BAG JSON***** {bagjson}")
+
     return JsonResponse(data)
 
 

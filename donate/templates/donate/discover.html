@@ -76,7 +76,6 @@
                 center: my_coords
             });
 
-
         // Iterate through all existing user coordinates
         for (var i = 0; i < coords.length; i++) {
 
@@ -187,7 +186,7 @@
                 document.querySelector('#bag_table').innerHTML = "";
 
                 // Trigger Donation Spot Marker AJAX request
-                if (this['place_id'] && this['infowindow']) {
+                if (this['coord_type'] == "DonationSpot") {
 
                     // Opens info window object
                     this['infowindow'].open(map, this);
@@ -205,13 +204,13 @@
                         success: function(data) {
                             if (data) {
 
-                                // Hide Bag info row
+                                // Hide Bag header row
                                 document.querySelector('#bag_info_row').hidden = true;
 
-                                // Hide Donation User info row
+                                // Hide Donation User header row
                                 document.querySelector('#bag_user_info_row').hidden = true;
 
-                                // Unhide Donation Spot info row
+                                // Unhide Donation Spot header row
                                 document.querySelector('#donation_spot_info_row').hidden = false;
 
                                 // Apply marker's user
@@ -231,13 +230,13 @@
                 // Trigger User Marker AJAX request
                 else {
 
-                    // Hide Donation Spot info row
+                    // Hide Donation Spot header row
                     document.querySelector('#donation_spot_info_row').hidden = true;
 
-                    // Unhide Bag User info row
+                    // Unhide Bag User header row
                     document.querySelector('#bag_user_info_row').hidden = false;
 
-                    // Unhide Bag info row
+                    // Unhide Bag header row
                     document.querySelector('#bag_info_row').hidden = false;
 
                     // Ajax request to return user and bag info of clicked location
@@ -350,11 +349,22 @@
             // End GOOGLE MAPS CLICK marker listener
         }
 
-        // Request button click event
+        // Button event listener
         document.addEventListener('click', function(e) {
 
-            // Target request button
-            if (e.target.className === "btn btn-outline-info btn-sm btn-request") {
+            // Zoom control click event
+            if (e.target.className == "gm-control-active") {
+                alert("zoom control clicked");
+                alert(map.getZoom());
+
+                // TODO: Change marker icon sizes on zoom levels.
+                // 15 default
+                // 14-13 far
+
+            }
+
+            // Request button click event
+            if (e.target.id === "requestbag-btn") {
 
                 $.ajax({
                     url: "{% url 'ajax_bag_request' %}",
