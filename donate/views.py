@@ -163,7 +163,7 @@ def locate(request):
             # Save location
             mylocation.save()
 
-        return HttpResponseRedirect(reverse("index"))
+        return render(request, "donate/index.html")
 
     context = {
         "MyAddress": mylocation
